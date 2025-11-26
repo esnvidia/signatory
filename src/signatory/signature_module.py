@@ -34,7 +34,7 @@ def interpret_basepoint(basepoint, batch_size, channel_size, dtype, device):
         basepoint_value = basepoint
         basepoint = True
     else:
-        basepoint_value = torch.Tensor()
+        basepoint_value = torch.empty(0)
     return basepoint, basepoint_value
 
 
@@ -43,7 +43,7 @@ def interpret_initial(initial):
         initial_value = initial
         initial = True
     else:
-        initial_value = torch.Tensor()
+        initial_value = torch.empty(0)
         initial = False
     return initial, initial_value
 

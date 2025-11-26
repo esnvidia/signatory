@@ -24,39 +24,48 @@ Check out `this <https://arxiv.org/abs/1603.03788>`__ for a primer on the use of
 Installation
 ############
 
+**Signatory 2.0 - PyTorch 2.x Support**
+
+Signatory 2.0 has been modernized for PyTorch 2.x with support for Python 3.10+.
+
+Installation from source
+------------------------
+
 .. code-block:: bash
 
-    pip install signatory==<SIGNATORY_VERSION>.<TORCH_VERSION> --no-cache-dir --force-reinstall
+    git clone https://github.com/patrick-kidger/signatory.git
+    cd signatory
+    git checkout pytorch-2.10-modernization
+    pip install -e . --no-build-isolation
 
-where ``<SIGNATORY_VERSION>`` is the version of Signatory you would like to download (the most recent version is 1.2.7) and ``<TORCH_VERSION>`` is the version of PyTorch you are using.
+**Requirements:**
 
-Available for Python 3.7--3.9 on Linux and Windows. Requires `PyTorch <http://pytorch.org/>`__ 1.8.0--1.11.0.
-
-(If you need it, then previous versions of Signatory included support for older versions of Python, PyTorch, and MacOS, see `here <https://signatory.readthedocs.io/en/latest/pages/usage/installation.html#older-versions>`__.)
+* Python 3.10, 3.11, or 3.12
+* PyTorch 2.x (tested with PyTorch 2.10)
+* Linux or Windows
+* CUDA support (optional, for GPU acceleration)
 
 After installation, just ``import signatory`` inside Python.
 
-Take care **not** to run ``pip install signatory``, as this will likely download the wrong version.
+**Legacy Installation (PyTorch 1.x)**
 
-Example:
---------
-
-For example, if you are using PyTorch 1.11.0 and want Signatory 1.2.7, then you should run:
+For PyTorch 1.8.0--1.11.0, use Signatory 1.2.7:
 
 .. code-block:: bash
 
-    pip install signatory==1.2.7.1.11.0 --no-cache-dir --force-reinstall
-        
-Why you need to specify all of this:
-------------------------------------
+    pip install signatory==1.2.7.<TORCH_VERSION> --no-cache-dir --force-reinstall
 
-Yes, this looks a bit odd. This is needed to work around `limitations of PyTorch <https://github.com/pytorch/pytorch/issues/28754>`__ and `pip <https://www.python.org/dev/peps/pep-0440/>`__.
+where ``<TORCH_VERSION>`` is your PyTorch version (e.g., ``1.11.0``).
 
-The ``--no-cache-dir --force-reinstall`` flags are because ``pip`` doesn't expect to need to care about versions quite as much as this, so it will sometimes erroneously use inappropriate caches if not told otherwise.
+**What's New in 2.0:**
 
-Installation from source is also possible; please consult the `documentation <https://signatory.readthedocs.io/en/latest/pages/usage/installation.html#usage-install-from-source>`__. This also includes information on how to run the tests and benchmarks.
+* PyTorch 2.x compatibility
+* Python 3.10+ support  
+* torch.compile support (with warnings for C++ extensions)
+* Fixed GIL handling in PyCapsule creation
+* Updated to modern PyTorch APIs
 
-If you have any problems with installation then check the `FAQ <https://signatory.readthedocs.io/en/latest/pages/miscellaneous/faq.html#miscellaneous-faq-importing>`__. If that doesn't help then feel free to `open an issue <https://github.com/patrick-kidger/signatory/issues>`__.
+If you have any problems with installation, feel free to `open an issue <https://github.com/patrick-kidger/signatory/issues>`__.
 
 
 
@@ -78,7 +87,31 @@ Usage is straightforward. As a simple example,
     signature = signatory.signature(path, depth)
     # signature is a PyTorch tensor
 
-For further examples, see the `documentation <https://signatory.readthedocs.io/en/latest/pages/examples/examples.html>`__.
+**PyTorch 2.x torch.compile Support**
+
+Signatory 2.0 works with torch.compile:
+
+.. code-block:: python
+
+    import signatory
+    import torch
+    from torch import nn
+
+    class SigNet(nn.Module):
+        def __init__(self, in_channels, out_dimension, sig_depth):
+            super().__init__()
+            self.signature = signatory.Signature(depth=sig_depth)
+            sig_channels = signatory.signature_channels(in_channels, sig_depth)
+            self.linear = nn.Linear(sig_channels, out_dimension)
+        
+        def forward(self, path):
+            return self.linear(self.signature(path, basepoint=True))
+    
+    model = SigNet(3, 5, 3)
+    compiled_model = torch.compile(model)
+    # Works! (with expected warnings about C++ extensions)
+
+For further examples, see the `documentation <https://signatory.readthedocs.io/en/latest/pages/examples/examples.html>`__ or ``examples/example_torch_compile.py``.
 
 
 Citation

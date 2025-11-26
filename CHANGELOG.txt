@@ -1,3 +1,16 @@
+2.0.0
+-----
+MAJOR UPDATE: PyTorch 2.x Modernization
+- Added support for PyTorch 2.x (tested with PyTorch 2.10)
+- Added support for Python 3.10, 3.11, 3.12
+- Added torch.compile support (works with expected warnings for C++ extensions)
+- Fixed critical GIL handling bug in PyCapsule creation that caused segfaults
+- Replaced deprecated torch.Tensor() with torch.empty(0)
+- Updated metadata and requirements for modern Python/PyTorch
+- Added example_torch_compile.py demonstrating torch.compile usage
+- Dropped support for Python 3.6, 3.7, 3.8, 3.9
+- Dropped support for PyTorch < 2.0
+
 1.2.7
 -----
 Added support for PyTorch 1.10.0, 1.10.1, 1.11.0

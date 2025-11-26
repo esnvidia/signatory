@@ -27,7 +27,7 @@ copyright = "2019, {}".format(author)
 author_email = "contact@kidger.site"
 url = "https://github.com/patrick-kidger/signatory"
 license = "Apache-2.0"
-python_requires = "~=3.6"
+python_requires = ">=3.10"
 keywords = "signature"
 classifiers = ["Development Status :: 5 - Production/Stable",
                "Intended Audience :: Developers",
@@ -38,9 +38,9 @@ classifiers = ["Development Status :: 5 - Production/Stable",
                "Operating System :: MacOS :: MacOS X",
                "Operating System :: Microsoft :: Windows",
                "Operating System :: Unix",
-               "Programming Language :: Python :: 3.6",
-               "Programming Language :: Python :: 3.7",
-               "Programming Language :: Python :: 3.8",
+               "Programming Language :: Python :: 3.10",
+               "Programming Language :: Python :: 3.11",
+               "Programming Language :: Python :: 3.12",
                "Programming Language :: Python :: Implementation :: CPython",
                "Topic :: Scientific/Engineering :: Artificial Intelligence",
                "Topic :: Scientific/Engineering :: Information Analysis",

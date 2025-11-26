@@ -151,22 +151,25 @@ namespace signatory {
     py::object make_lyndon_info(int64_t channels, s_size_type depth, LogSignatureMode mode) {
         misc::checkargs_channels_depth(channels, depth);
 
-        py::gil_scoped_release release;
-
         std::unique_ptr<lyndon::LyndonWords> lyndon_words;
         std::vector<std::vector<std::tuple<int64_t, int64_t, int64_t>>> transforms;
         std::vector<std::vector<std::tuple<int64_t, int64_t, int64_t>>> transforms_backward;
 
-        // no make_unique in C++11
-        if (mode == LogSignatureMode::Words) {
-            lyndon_words.reset(new lyndon::LyndonWords(channels, depth, lyndon::LyndonWords::word_tag));
-        }
-        else if (mode == LogSignatureMode::Brackets) {
-            lyndon_words.reset(new lyndon::LyndonWords(channels, depth, lyndon::LyndonWords::bracket_tag));
-            lyndon_words->to_lyndon_basis(transforms, transforms_backward);
-            lyndon_words->delete_extra();
+        {
+            py::gil_scoped_release release;
+
+            // no make_unique in C++11
+            if (mode == LogSignatureMode::Words) {
+                lyndon_words.reset(new lyndon::LyndonWords(channels, depth, lyndon::LyndonWords::word_tag));
+            }
+            else if (mode == LogSignatureMode::Brackets) {
+                lyndon_words.reset(new lyndon::LyndonWords(channels, depth, lyndon::LyndonWords::bracket_tag));
+                lyndon_words->to_lyndon_basis(transforms, transforms_backward);
+                lyndon_words->delete_extra();
+            }
         }
 
+        // GIL is reacquired here before calling wrap_capsule which needs it
         return misc::wrap_capsule<logsignature::detail::LyndonInfo>(std::move(lyndon_words),
                                                                     std::move(transforms),
                                                                     std::move(transforms_backward));
