@@ -24,7 +24,7 @@ def get_insertion_matrix(signature, insertion_position, depth, channels):
     """
 
     batch = signature.shape[0]
-    B = torch.cat(batch * [torch.eye(channels)])
+    B = torch.cat(batch * [torch.eye(channels, device=signature.device, dtype=signature.dtype)])
     new_shape = [batch] + [channels] + [1] * (insertion_position - 1) + [channels] + [1] * (depth + 1 -
                                                                                             insertion_position)
     repeat_points = [1, 1] + [channels] * (insertion_position - 1) + [1] + [channels] * (depth + 1 - insertion_position)
@@ -97,8 +97,10 @@ def invert_signature(signature: torch.Tensor, depth: int, channels: int,
         raise ValueError("channels and depth do not correspond to signature shape.")
 
     batch = signature.shape[0]
-    path_derivatives = torch.zeros((batch, depth, channels))
-    path = torch.zeros((batch, depth + 1, channels))
+    device = signature.device
+    dtype = signature.dtype
+    path_derivatives = torch.zeros((batch, depth, channels), device=device, dtype=dtype)
+    path = torch.zeros((batch, depth + 1, channels), device=device, dtype=dtype)
 
     if initial_position is not None:
         path[:, 0, :] = initial_position
